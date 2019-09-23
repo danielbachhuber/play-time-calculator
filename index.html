@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+
+<div id="app">
+	<label>Number of players playing at a time:
+		<input type="number" v-model.number="playingCount">
+	</label>
+	<label>Number of playing rounds:
+		<input type="number" v-model.number="roundsCount">
+	</label>
+	<form @submit.prevent="handleAddPlayer">
+		<label>Add a player:
+			<input v-model="newPlayer">
+		</label>
+	</form>
+	<table>
+		<thead>
+			<th>Round</th>
+			<th v-for="n in playingCount">
+				Player {{ n }}
+			</th>
+		</thead>
+		<tbody>
+			<tr v-for="n in roundsCount">
+				<td>{{ n }}</td>
+				<td v-for="o in playingCount">
+					<input v-model="playLineup[n - 1][o - 1]">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table>
+		<thead>
+			<th>Player</th>
+			<th>Play Count</th>
+		</thead>
+		<tbody>
+			<tr v-for="(count, playerName) in players">
+				<td>{{ playerName }}</td>
+				<td>{{ count }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<script>
+	var roundsCount = 8;
+	var playLineup = [];
+	for ( var i = 0; i < roundsCount; i++ ) {
+		playLineup.push([]);
+	}
+	var app = new Vue({
+		el: '#app',
+		data: {
+			newPlayer: '',
+			playingCount: 4,
+			roundsCount: 8,
+			players: {},
+			playLineup: playLineup
+		},
+		methods: {
+			handleAddPlayer() {
+				this.players.push(this.newPlayer);
+				this.newPlayer = '';
+			},
+		},
+		watch: {
+			roundsCount(value) {
+				if ( value > this.playLineup.length ) {
+					for ( i=this.playLineup.length; i<=value; i++ ) {
+						this.playLineup.push([]);
+					}
+				} else if ( value < this.playLineup.length ) {
+					for ( i=this.playLineup.length; i>=value; i-- ) {
+						this.playLineup.pop();
+					}
+				}
+			},
+			playLineup(value) {
+				players = {};
+				value.forEach(function(row){
+					row.forEach(function(name){
+						if ( ! name.length ) {
+							return;
+						}
+						if ( typeof players[name] === 'undefined' ) {
+							players[name] = 0;
+						}
+						players[name]++;
+					})
+				})
+				this.players = players;
+			}
+		}
+	});
+</script>
+</body>
