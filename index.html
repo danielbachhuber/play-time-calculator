@@ -4,25 +4,29 @@
 	<meta charset="utf-8"/>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+	<style>
+		#app {
+			max-width: 960px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	</style>
 
 </head>
 <body>
 
 <div id="app">
 	<label>Number of players playing at a time:
-		<input type="number" v-model.number="playingCount">
+		<input type="number" v-model.number="playingCount" class="border">
 	</label>
 	<label>Number of playing rounds:
-		<input type="number" v-model.number="roundsCount">
+		<input type="number" v-model.number="roundsCount" class="border">
 	</label>
-	<form @submit.prevent="handleAddPlayer">
-		<label>Add a player:
-			<input v-model="newPlayer">
-		</label>
-	</form>
-	<table>
+	<table class="w-full my-4">
 		<thead>
-			<th>Round</th>
+			<th class="w-20">Round</th>
 			<th v-for="n in playingCount">
 				Player {{ n }}
 			</th>
@@ -31,25 +35,37 @@
 			<tr v-for="n in roundsCount">
 				<td>{{ n }}</td>
 				<td v-for="o in playingCount">
-					<input v-model="playLineup[n - 1][o - 1]">
+					<input v-model="playLineup[n - 1][o - 1]" class="border">
 				</td>
 			</tr>
 		</tbody>
 	</table>
-	<table>
-		<thead>
-			<th>Player</th>
-			<th>Play Count</th>
+	<table class="w-full my-4 table-fixed">
+		<thead class="text-left">
+			<th class="w-24">Player</th>
+			<th v-for="(name) in allNames">
+				{{ name }}
+			</th>
 		</thead>
 		<tbody>
 			<tr v-for="(data, playerName) in players">
-				<td>{{ playerName }}</td>
-				<td v-for="(count, title) in data">
-					{{ count }}
+				<td class="text-left">{{ playerName }}</td>
+				<td v-for="(count, title) in data" class="text-center">
+					<span v-if="title === playerName" class="border border-black block border-2">
+						{{ count }}
+					</span>
+					<span v-else class="block">
+						{{ count }}
+					</span>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+	<form @submit.prevent="handleAddPlayer">
+		<label>Add a player:
+			<input v-model="newPlayer" class="border">
+		</label>
+	</form>
 </div>
 
 <script>
@@ -66,17 +82,19 @@
 			roundsCount: 8,
 			players: {},
 			enteredPlayers: [],
+			allNames: [],
 			playLineup: playLineup
 		},
 		methods: {
 			handleAddPlayer() {
 				this.enteredPlayers.push(this.newPlayer);
 				if ( typeof this.players[this.newPlayer] === 'undefined' ) {
-					this.players[this.newPlayer] = {
-						total: 0,
-					};
+					this.players[this.newPlayer] = {};
 				}
 				this.newPlayer = '';
+				// Triggers a refresh.
+				this.playLineup.push([]);
+				this.playLineup.pop();
 			},
 		},
 		watch: {
@@ -94,9 +112,7 @@
 			playLineup(value) {
 				players = {};
 				this.enteredPlayers.forEach((name) => {
-					players[name] = {
-						total: 0,
-					};
+					players[name] = {};
 				});
 				value.forEach(function(row){
 					row.forEach(function(name){
@@ -104,14 +120,35 @@
 							return;
 						}
 						if ( typeof players[name] === 'undefined' ) {
-							players[name] = {
-								total: 0,
-							};
+							players[name] = {};
 						}
-						players[name]['total']++;
 					})
 				})
+				allNames = [];
+				for( [name, data] of Object.entries(players) ) {
+					allNames.push(name);
+				}
+				for( [name, data] of Object.entries(players) ) {
+					for( i = 0; i < allNames.length; i++ ) {
+						if ( typeof players[name][allNames[i]] === 'undefined' ) {
+							players[name][allNames[i]] = 0;
+						}
+					}
+				}
+				value.forEach(function(row){
+					for( [name, data] of Object.entries(players) ) {
+						if ( ! row.includes(name) ) {
+							continue;
+						}
+						for( [other, count] of Object.entries(data) ) {
+							if ( row.includes(other) ) {
+								players[name][other]++;
+							}
+						}
+					}
+				});
 				this.players = players;
+				this.allNames = allNames;
 			}
 		}
 	});
