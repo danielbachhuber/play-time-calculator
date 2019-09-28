@@ -109,7 +109,7 @@
 						this.playLineup.push([]);
 					}
 				} else if ( value < this.playLineup.length ) {
-					for ( i=this.playLineup.length; i>=value; i-- ) {
+					for ( i=this.playLineup.length; i>value; i-- ) {
 						this.playLineup.pop();
 					}
 				}
