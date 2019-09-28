@@ -86,11 +86,16 @@
 			playLineup: []
 		},
 		created() {
-			let playLineup = [];
-			for ( var i = 0; i < this.roundsCount; i++ ) {
-				playLineup.push([]);
+			let calcData = JSON.parse(localStorage.getItem('calcdata'));
+			if ( typeof calcData != 'undefined' ) {
+				Object.assign(this.$data, calcData);
+			} else {
+				let playLineup = [];
+				for ( var i = 0; i < this.roundsCount; i++ ) {
+					playLineup.push([]);
+				}
+				this.playLineup = playLineup;
 			}
-			this.playLineup = playLineup;
 		},
 		methods: {
 			handleAddPlayer() {
@@ -102,6 +107,10 @@
 				// Triggers a refresh.
 				this.playLineup.push([]);
 				this.playLineup.pop();
+				this.saveData();
+			},
+			saveData() {
+				localStorage.setItem('calcdata', JSON.stringify(this.$data));
 			},
 			handleReset() {
 				this.players = {};
@@ -115,6 +124,7 @@
 					playLineup.push([]);
 				}
 				this.playLineup = playLineup;
+				this.saveData();
 			}
 		},
 		watch: {
@@ -128,6 +138,7 @@
 						this.playLineup.pop();
 					}
 				}
+				this.saveData();
 			},
 			playLineup(value) {
 				players = {};
@@ -169,6 +180,7 @@
 				});
 				this.players = players;
 				this.allNames = allNames;
+				this.saveData();
 			}
 		}
 	});
