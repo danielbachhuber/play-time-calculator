@@ -71,11 +71,6 @@
 </div>
 
 <script>
-	var roundsCount = 8;
-	var playLineup = [];
-	for ( var i = 0; i < roundsCount; i++ ) {
-		playLineup.push([]);
-	}
 	var app = new Vue({
 		el: '#app',
 		data: {
@@ -85,7 +80,15 @@
 			players: {},
 			enteredPlayers: [],
 			allNames: [],
-			playLineup: playLineup
+			playLineup: []
+		},
+		created() {
+			let roundsCount = 8;
+			let playLineup = [];
+			for ( var i = 0; i < roundsCount; i++ ) {
+				playLineup.push([]);
+			}
+			this.playLineup = playLineup;
 		},
 		methods: {
 			handleAddPlayer() {
