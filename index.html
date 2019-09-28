@@ -87,7 +87,7 @@
 		},
 		created() {
 			let calcData = JSON.parse(localStorage.getItem('calcdata'));
-			if ( typeof calcData != 'undefined' ) {
+			if ( calcData !== null ) {
 				Object.assign(this.$data, calcData);
 			} else {
 				let playLineup = [];
