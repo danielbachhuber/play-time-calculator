@@ -20,11 +20,14 @@
 <body>
 
 <div id="app">
-	<label>Number of players playing at a time:
+	<label>Players playing at a time:
 		<input type="number" v-model.number="playingCount" class="border">
 	</label>
-	<label>Number of playing rounds:
+	<label>Total rounds:
 		<input type="number" v-model.number="roundsCount" class="border">
+	</label>
+	<label>
+		<button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-2 border border-blue-500 hover:border-transparent rounded" v-on:click="handleReset">Reset</button>
 	</label>
 	<table class="w-full my-4">
 		<thead>
@@ -83,9 +86,8 @@
 			playLineup: []
 		},
 		created() {
-			let roundsCount = 8;
 			let playLineup = [];
-			for ( var i = 0; i < roundsCount; i++ ) {
+			for ( var i = 0; i < this.roundsCount; i++ ) {
 				playLineup.push([]);
 			}
 			this.playLineup = playLineup;
@@ -101,6 +103,19 @@
 				this.playLineup.push([]);
 				this.playLineup.pop();
 			},
+			handleReset() {
+				this.players = {};
+				this.allNames = [];
+				this.playingCount = 4;
+				this.roundsCount = 8;
+				this.enteredPlayers = [];
+				// Triggers a refresh.
+				let playLineup = [];
+				for ( var i = 0; i < this.roundsCount; i++ ) {
+					playLineup.push([]);
+				}
+				this.playLineup = playLineup;
+			}
 		},
 		watch: {
 			roundsCount(value) {
