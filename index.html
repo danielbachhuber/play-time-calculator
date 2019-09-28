@@ -42,9 +42,11 @@
 			<th>Play Count</th>
 		</thead>
 		<tbody>
-			<tr v-for="(count, playerName) in players">
+			<tr v-for="(data, playerName) in players">
 				<td>{{ playerName }}</td>
-				<td>{{ count }}</td>
+				<td v-for="(count, title) in data">
+					{{ count }}
+				</td>
 			</tr>
 		</tbody>
 	</table>
@@ -63,11 +65,17 @@
 			playingCount: 4,
 			roundsCount: 8,
 			players: {},
+			enteredPlayers: [],
 			playLineup: playLineup
 		},
 		methods: {
 			handleAddPlayer() {
-				this.players.push(this.newPlayer);
+				this.enteredPlayers.push(this.newPlayer);
+				if ( typeof this.players[this.newPlayer] === 'undefined' ) {
+					this.players[this.newPlayer] = {
+						total: 0,
+					};
+				}
 				this.newPlayer = '';
 			},
 		},
@@ -85,15 +93,22 @@
 			},
 			playLineup(value) {
 				players = {};
+				this.enteredPlayers.forEach((name) => {
+					players[name] = {
+						total: 0,
+					};
+				});
 				value.forEach(function(row){
 					row.forEach(function(name){
 						if ( ! name.length ) {
 							return;
 						}
 						if ( typeof players[name] === 'undefined' ) {
-							players[name] = 0;
+							players[name] = {
+								total: 0,
+							};
 						}
-						players[name]++;
+						players[name]['total']++;
 					})
 				})
 				this.players = players;
