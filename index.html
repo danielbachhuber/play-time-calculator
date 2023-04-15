@@ -39,7 +39,7 @@
 			<tr v-for="n in roundsCount">
 				<td>{{ n }}</td>
 				<td v-for="o in playingCount">
-					<input v-model="playLineup[n - 1][o - 1]" class="border">
+					<input v-model="playLineup[n - 1][o - 1]" class="border max-w-full">
 				</td>
 			</tr>
 		</tbody>
